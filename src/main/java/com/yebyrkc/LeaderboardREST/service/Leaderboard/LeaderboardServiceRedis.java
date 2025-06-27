@@ -52,44 +52,62 @@ public class LeaderboardServiceRedis implements LeaderboardService {
 //    }
 @Override
 public List<LeaderboardEntry> getTopPlayers(int n) {
+    //get tuple of Sorted set , aka Leaderboard Set
     Set<ZSetOperations.TypedTuple<String>> top = redisTemplate.opsForZSet()
             .reverseRangeWithScores(LEADERBOARD_KEY, 0, n - 1);
 
+    //seperate them into two lists for filtering playerId and use it for getting player attributes
+    //from player Hashes (we are not storing player attributes in leaderboard set actually,
+    // we need to get them from hashes
     List<LeaderboardEntry> result = new ArrayList<>();
     if (top != null) {
-        // Using Redis Pipelining to fetch player hash data
         List<String> playerIds = top.stream().map(ZSetOperations.TypedTuple::getValue).toList();
         List<Double> scores = top.stream().map(ZSetOperations.TypedTuple::getScore).toList();
 
+        //get hashes of players (in byte format)
+        // Pipelined HMGET for each player
         List<Object> hashResults = redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
-            playerIds.forEach(id -> {
-                byte[] key = ( id).getBytes(StandardCharsets.UTF_8);
-                connection.hashCommands().hGet(key, "username".getBytes());
-                connection.hashCommands().hGet(key, "level".getBytes());
-                connection.hashCommands().hGet(key, "lastUpdated".getBytes());
-            });
+            for (String id : playerIds) {
+                //convert playerId's into bytes
+                byte[] key = id.getBytes(StandardCharsets.UTF_8);
+                //HMGET with byte key and byte field names
+                connection.hashCommands().hMGet(
+                        key,
+                        "username".getBytes(StandardCharsets.UTF_8),
+                        "level".getBytes(StandardCharsets.UTF_8),
+                        "lastUpdated".getBytes(StandardCharsets.UTF_8)
+                );
+
+            }
             return null;
         });
 
-        // hashResults will contain all hash data sequentially in order
+        //convert byte hashes  and create the LeaderboardEntry
         for (int i = 0; i < playerIds.size(); i++) {
+            //get playerId from list
             String playerId = playerIds.get(i);
+
             double score = scores.get(i) != null ? scores.get(i) : 0.0;
 
-            // Every player has 3 hash lookups in sequence
-            int base = i * 3;
-            String username = (String) hashResults.get(base);
-            String levelStr = (String) hashResults.get(base + 1);
-            String lastUpdatedStr = (String) hashResults.get(base + 2);
+            @SuppressWarnings("unchecked")
+            List<byte[]> values = (List<byte[]>) hashResults.get(i);
+
+            //decode bytes to Strings
+            String username = values.get(0) != null ? new String(values.get(0), StandardCharsets.UTF_8) : null;
+            String levelStr = values.get(1) != null ? new String(values.get(1), StandardCharsets.UTF_8) : null;
+            String lastUpdatedStr = values.get(2) != null ? new String(values.get(2), StandardCharsets.UTF_8) : null;
 
             int level = levelStr != null ? Integer.parseInt(levelStr) : 0;
             Instant lastUpdated = lastUpdatedStr != null ? Instant.ofEpochSecond(Long.parseLong(lastUpdatedStr)) : Instant.now();
 
+            //create entry
             result.add(new LeaderboardEntry(playerId, username, score, level, lastUpdated));
         }
     }
+    //return list of entries
     return result;
 }
+
 
     @Override
     public LeaderboardEntry getPlayer(String playerId) {
@@ -184,11 +202,11 @@ public void addPlayers(List<LeaderboardEntry> entries) {
     redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
         // Pipelining multiple commands for all players
         for (LeaderboardEntry e : entries) {
-            // Add to sorted set
+            // Add to sorted set with converting them into bytes
             connection.zAdd(LEADERBOARD_KEY.getBytes(StandardCharsets.UTF_8), e.getScore(),
                     e.getPlayerId().getBytes(StandardCharsets.UTF_8));
 
-            // Set fields in hash
+            // Set fields in hash by converting them into Bytes
             Map<byte[], byte[]> fields = new HashMap<>();
             fields.put("username".getBytes(StandardCharsets.UTF_8), e.getUsername().getBytes(StandardCharsets.UTF_8));
             fields.put("level".getBytes(StandardCharsets.UTF_8), String.valueOf(e.getLevel()).getBytes(StandardCharsets.UTF_8));
