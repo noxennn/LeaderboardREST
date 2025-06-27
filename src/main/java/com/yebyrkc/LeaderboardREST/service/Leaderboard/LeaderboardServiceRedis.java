@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.util.*;
 
 @Service
-//@Primary
+@Primary
 public class LeaderboardServiceRedis implements LeaderboardService {
 
     private final RedisTemplate<String, String> redisTemplate;
@@ -89,13 +89,15 @@ public List<LeaderboardEntry> getTopPlayers(int n) {
 
             double score = scores.get(i) != null ? scores.get(i) : 0.0;
 
-            @SuppressWarnings("unchecked")
-            List<byte[]> values = (List<byte[]>) hashResults.get(i);
+//            @SuppressWarnings("unchecked")
+//            List<byte[]> values = (List<byte[]>) hashResults.get(i);
 
+            @SuppressWarnings("unchecked")
+            List<String> values = (List<String>) hashResults.get(i);
             //decode bytes to Strings
-            String username = values.get(0) != null ? new String(values.get(0), StandardCharsets.UTF_8) : null;
-            String levelStr = values.get(1) != null ? new String(values.get(1), StandardCharsets.UTF_8) : null;
-            String lastUpdatedStr = values.get(2) != null ? new String(values.get(2), StandardCharsets.UTF_8) : null;
+            String username = values.get(0) ;
+            String levelStr = values.get(1) ;
+            String lastUpdatedStr = values.get(2) ;
 
             int level = levelStr != null ? Integer.parseInt(levelStr) : 0;
             Instant lastUpdated = lastUpdatedStr != null ? Instant.ofEpochSecond(Long.parseLong(lastUpdatedStr)) : Instant.now();

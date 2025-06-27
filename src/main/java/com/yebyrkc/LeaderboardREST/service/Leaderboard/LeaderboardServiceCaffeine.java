@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-@Primary
+//@Primary
 public class LeaderboardServiceCaffeine implements LeaderboardService {
 
     @Autowired

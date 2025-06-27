@@ -20,7 +20,7 @@ public class CaffeineLeaderboardRepository implements LeaderboardRepository {
     public CaffeineLeaderboardRepository() {
         // Customize cache as you want (e.g. TTL, max size):
         this.cache = Caffeine.newBuilder()
-                .maximumSize(100_000)                 // up to 10k players
+                .maximumSize(2_000_000)                 // up to 10k players
                 .expireAfterAccess(60, TimeUnit.MINUTES) // evict if not accessed in 60 mins
                 .build();
     }
