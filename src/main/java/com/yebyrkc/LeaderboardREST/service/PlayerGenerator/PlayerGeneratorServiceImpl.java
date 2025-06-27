@@ -1,11 +1,13 @@
 package com.yebyrkc.LeaderboardREST.service.PlayerGenerator;
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import com.yebyrkc.LeaderboardREST.service.Leaderboard.LeaderboardService;
 import com.yebyrkc.LeaderboardREST.service.PlayerGenerator.PlayerGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,9 @@ import java.util.Random;
 public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
 
     private final LeaderboardService leaderboardService;
-    private final Random random = new Random();
+     final SecureRandom secureRandom = new SecureRandom();
+    final Random random = new Random();
+    public  static final char[] chars= "0123456789".toCharArray();
 
     // Random username parts
     private static final String[] NAME_PREFIXES = {
@@ -74,7 +78,9 @@ public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
     public void generatePlayers(int count) {
         List<LeaderboardEntry> entries = new ArrayList<>(count);
         for (int i = 1; i <= count; i++) {
-            String playerId = "player:" + i;
+            //using secureRandom only for nanoID generation, it is much slower than normal random
+            String playerId = "player:" + NanoIdUtils.randomNanoId(secureRandom,chars,10);
+
 //             username like SwiftTiger123
             String username = NAME_PREFIXES[random.nextInt(NAME_PREFIXES.length)]
                     + NAME_SUFFIXES[random.nextInt(NAME_SUFFIXES.length)]
