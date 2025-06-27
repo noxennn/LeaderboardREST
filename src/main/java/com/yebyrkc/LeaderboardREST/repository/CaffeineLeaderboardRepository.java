@@ -8,9 +8,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
-//@Primary
+@Primary
 public class CaffeineLeaderboardRepository implements LeaderboardRepository {
 
     private final Cache<String, LeaderboardEntry> cache;
@@ -29,6 +31,17 @@ public class CaffeineLeaderboardRepository implements LeaderboardRepository {
     }
 
     @Override
+    public void saveAll(List<LeaderboardEntry> entries) {
+        Map<String, LeaderboardEntry> map = entries.stream()
+                .collect(Collectors.toMap(
+                        LeaderboardEntry::getPlayerId,
+                        Function.identity(),
+                        (existing, replacement) -> replacement // keep the new one
+                ));
+        cache.putAll(map);
+    }
+
+    @Override
     public LeaderboardEntry findById(String playerId) {
         return cache.getIfPresent(playerId);
     }
@@ -36,5 +49,15 @@ public class CaffeineLeaderboardRepository implements LeaderboardRepository {
     @Override
     public List<LeaderboardEntry> findAll() {
         return new ArrayList<>(cache.asMap().values());
+    }
+
+    @Override
+    public void delete(String playerId) {
+        cache.invalidate(playerId);
+    }
+
+    @Override
+    public void deleteAll() {
+        cache.invalidateAll();
     }
 }
