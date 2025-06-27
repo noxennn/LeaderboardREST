@@ -66,6 +66,6 @@ public class LeaderboardServiceCaffeine implements LeaderboardService {
 
     @Override
     public void addPlayers(List<LeaderboardEntry> entries) {
-
+        leaderboardRepository.saveAll(entries);
     }
 }
