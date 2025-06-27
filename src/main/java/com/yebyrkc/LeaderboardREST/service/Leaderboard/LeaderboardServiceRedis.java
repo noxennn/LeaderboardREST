@@ -218,9 +218,25 @@ public void addPlayers(List<LeaderboardEntry> entries) {
     });
 }
 
+    @Override
+    public void deletePlayer(String playerId) {
+        // Remove from the sorted set
+        redisTemplate.opsForZSet().remove(LEADERBOARD_KEY, playerId);
+        // Delete the player's hash data
+        redisTemplate.delete(playerId);
+    }
 
-
-
+    @Override
+    public void deleteAllPlayers() {
+        // Get all player IDs in the leaderboard sorted set
+        Set<String> playerIds = redisTemplate.opsForZSet().range(LEADERBOARD_KEY, 0, -1);
+        if (playerIds != null && !playerIds.isEmpty()) {
+            // Delete all player hash keys
+            redisTemplate.delete(playerIds);
+        }
+        // Clear the sorted set
+        redisTemplate.delete(LEADERBOARD_KEY);
+    }
 
 
 }

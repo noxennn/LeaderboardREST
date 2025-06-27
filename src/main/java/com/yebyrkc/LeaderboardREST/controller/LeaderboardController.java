@@ -3,6 +3,7 @@ package com.yebyrkc.LeaderboardREST.controller;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import com.yebyrkc.LeaderboardREST.service.Leaderboard.LeaderboardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,6 +62,16 @@ public class LeaderboardController {
     ) {
         leaderboardService.addPlayer(playerId, username, level, score);
     }
+    @DeleteMapping("/player")
+    public  ResponseEntity<String> deletePlayer(@RequestParam String playerId){
+        leaderboardService.deletePlayer(playerId);
+        return ResponseEntity.ok("Succesfully deleted player with playerId: "+playerId);
+    }
 
+    @DeleteMapping("/players")
+    public ResponseEntity<String> deleteAllPlayers(){
+        leaderboardService.deleteAllPlayers();
+        return ResponseEntity.ok("Succesfully deleted all players");
+    }
 
 }

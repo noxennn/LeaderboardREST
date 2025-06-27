@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-//@Primary
+@Primary
 public class LeaderboardServiceCaffeine implements LeaderboardService {
 
     @Autowired
@@ -67,5 +67,15 @@ public class LeaderboardServiceCaffeine implements LeaderboardService {
     @Override
     public void addPlayers(List<LeaderboardEntry> entries) {
         leaderboardRepository.saveAll(entries);
+    }
+
+    @Override
+    public void deletePlayer(String playerId) {
+        leaderboardRepository.delete(playerId);
+    }
+
+    @Override
+    public void deleteAllPlayers() {
+        leaderboardRepository.deleteAll();
     }
 }

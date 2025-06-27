@@ -17,4 +17,8 @@ public interface LeaderboardService {
     void addPlayer(String playerId, String username, int level, double initialScore);
 
     void addPlayers(List<LeaderboardEntry> entries);
+
+    void deletePlayer(String playerId);
+
+    void deleteAllPlayers();
 }
