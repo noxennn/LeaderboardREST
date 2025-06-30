@@ -4,6 +4,8 @@ import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import com.yebyrkc.LeaderboardREST.service.Leaderboard.LeaderboardService;
 import com.yebyrkc.LeaderboardREST.service.PlayerGenerator.PlayerGeneratorService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.Random;
 
 @Service
 public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlayerGeneratorServiceImpl.class);
 
     private final LeaderboardService leaderboardService;
      final SecureRandom secureRandom = new SecureRandom();
@@ -76,11 +80,15 @@ public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
 //    }
     @Override
     public void generatePlayers(int count) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("count must be greater than 0");
+        }
+        logger.debug("Generating {} players", count);
         List<LeaderboardEntry> entries = new ArrayList<>(count);
         for (int i = 1; i <= count; i++) {
             //using secureRandom only for nanoID generation, it is much slower than normal random
             String playerId = "player:" + NanoIdUtils.randomNanoId(secureRandom,chars,10);
-
+            
 //             username like SwiftTiger123
             String username = NAME_PREFIXES[random.nextInt(NAME_PREFIXES.length)]
                     + NAME_SUFFIXES[random.nextInt(NAME_SUFFIXES.length)]
@@ -93,6 +101,7 @@ public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
             double score = 0 + random.nextDouble() * 4500;
             // random username, level, score as before
             entries.add(new LeaderboardEntry(playerId, username, score, level, Instant.now()));
+            logger.debug("Created player {}", playerId);
         }
         leaderboardService.addPlayers(entries);  // single call
     }

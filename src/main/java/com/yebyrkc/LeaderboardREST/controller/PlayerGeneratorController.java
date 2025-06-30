@@ -1,6 +1,8 @@
 package com.yebyrkc.LeaderboardREST.controller;
 
 import com.yebyrkc.LeaderboardREST.service.PlayerGenerator.PlayerGeneratorService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/players")
 public class PlayerGeneratorController {
 
+    private static final Logger logger = LoggerFactory.getLogger(PlayerGeneratorController.class);
 
     @Autowired
     private final PlayerGeneratorService playerGeneratorService;
@@ -25,6 +28,7 @@ public class PlayerGeneratorController {
      */
     @PostMapping("")
     public ResponseEntity<String> generatePlayers(@RequestParam(defaultValue = "1") int count) {
+        logger.debug("Generating {} players via controller", count);
         playerGeneratorService.generatePlayers(count);
         return ResponseEntity.ok("Successfully generated " + count + " players.");
     }

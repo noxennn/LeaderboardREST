@@ -1,12 +1,15 @@
 package com.yebyrkc.LeaderboardREST.service.Leaderboard;
 
 
+import com.yebyrkc.LeaderboardREST.exception.PlayerNotFoundException;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.data.redis.core.RedisCallback;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -19,6 +22,8 @@ public class LeaderboardServiceRedis implements LeaderboardService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
+    private static final Logger logger = LoggerFactory.getLogger(LeaderboardServiceRedis.class);
+
     private static final String LEADERBOARD_KEY = "leaderboard";
     private static final String PLAYER_HASH_PREFIX = "player:";
 
@@ -28,11 +33,14 @@ public class LeaderboardServiceRedis implements LeaderboardService {
 
     @Override
     public double incrementScore(String playerId, double increment) {
-        // Increment in sorted set
+        logger.debug("Incrementing score for {} by {} in Redis", playerId, increment);
         Double newScore = redisTemplate.opsForZSet().incrementScore(LEADERBOARD_KEY, playerId, increment);
+        if (newScore == null) {
+            throw new PlayerNotFoundException("Player not found: " + playerId);
+        }
         // Update timestamp in hash
         redisTemplate.opsForHash().put(PLAYER_HASH_PREFIX + playerId, "lastUpdated", String.valueOf(Instant.now().getEpochSecond()));
-        return newScore != null ? newScore : 0;
+        return newScore;
     }
 
 //    @Override
@@ -52,7 +60,10 @@ public class LeaderboardServiceRedis implements LeaderboardService {
 //    }
 @Override
 public List<LeaderboardEntry> getTopPlayers(int n) {
-    //get tuple of Sorted set , aka Leaderboard Set
+    if (n <= 0) {
+        throw new IllegalArgumentException("n must be greater than 0");
+    }
+    logger.debug("Retrieving top {} players from Redis", n);
     Set<ZSetOperations.TypedTuple<String>> top = redisTemplate.opsForZSet()
             .reverseRangeWithScores(LEADERBOARD_KEY, 0, n - 1);
 
@@ -113,14 +124,22 @@ public List<LeaderboardEntry> getTopPlayers(int n) {
 
     @Override
     public LeaderboardEntry getPlayer(String playerId) {
+        logger.debug("Retrieving player {} from Redis", playerId);
         Double score = redisTemplate.opsForZSet().score(LEADERBOARD_KEY, playerId);
-        return getPlayerWithScore(playerId, score != null ? score : 0);
+        if (score == null) {
+            throw new PlayerNotFoundException("Player not found: " + playerId);
+        }
+        return getPlayerWithScore(playerId, score);
     }
 
     @Override
     public long getPlayerRank(String playerId) {
+        logger.debug("Retrieving rank for {} from Redis", playerId);
         Long rank = redisTemplate.opsForZSet().reverseRank(LEADERBOARD_KEY, playerId);
-        return (rank != null ? rank + 1 : -1); // return 1-based rank
+        if (rank == null) {
+            throw new PlayerNotFoundException("Player not found: " + playerId);
+        }
+        return rank + 1; // return 1-based rank
     }
 
     /**
@@ -149,7 +168,7 @@ public List<LeaderboardEntry> getTopPlayers(int n) {
 //    }
 @Override
 public void addPlayer(String playerId, String username, int level, double initialScore) {
-    // Add to sorted set
+    logger.debug("Adding player to Redis with playerId={}", playerId);
     redisTemplate.opsForZSet().add(LEADERBOARD_KEY, playerId, initialScore);
 
     // Create a map with multiple fields to set in the hash
@@ -200,6 +219,7 @@ public void addPlayer(String playerId, String username, int level, double initia
 //    }
 @Override
 public void addPlayers(List<LeaderboardEntry> entries) {
+    logger.debug("Adding {} players to Redis", entries.size());
     // Execute pipelined operations
     redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
         // Pipelining multiple commands for all players
@@ -222,6 +242,7 @@ public void addPlayers(List<LeaderboardEntry> entries) {
 
     @Override
     public void deletePlayer(String playerId) {
+        logger.debug("Deleting player {} from Redis", playerId);
         // Remove from the sorted set
         redisTemplate.opsForZSet().remove(LEADERBOARD_KEY, playerId);
         // Delete the player's hash data
@@ -230,6 +251,7 @@ public void addPlayers(List<LeaderboardEntry> entries) {
 
     @Override
     public void deleteAllPlayers() {
+        logger.debug("Deleting all players from Redis");
         // Get all player IDs in the leaderboard sorted set
         Set<String> playerIds = redisTemplate.opsForZSet().range(LEADERBOARD_KEY, 0, -1);
         if (playerIds != null && !playerIds.isEmpty()) {
