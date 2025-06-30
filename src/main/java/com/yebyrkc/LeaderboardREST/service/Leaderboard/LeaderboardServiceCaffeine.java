@@ -3,6 +3,8 @@ package com.yebyrkc.LeaderboardREST.service.Leaderboard;
 import com.yebyrkc.LeaderboardREST.exception.PlayerNotFoundException;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import com.yebyrkc.LeaderboardREST.repository.LeaderboardRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,23 +27,33 @@ public class LeaderboardServiceCaffeine implements LeaderboardService {
     @Autowired
     private final LeaderboardRepository leaderboardRepository;
 
-    public LeaderboardServiceCaffeine(LeaderboardRepository leaderboardRepository) {
+    private final MeterRegistry meterRegistry;
+
+    public LeaderboardServiceCaffeine(LeaderboardRepository leaderboardRepository, MeterRegistry meterRegistry) {
         this.leaderboardRepository = leaderboardRepository;
+        this.meterRegistry = meterRegistry;
     }
+
 
     @Override
     public double incrementScore(String playerId, double increment) {
-        logger.debug("Incrementing score for {} by {} in Caffeine service", playerId, increment);
-        LeaderboardEntry entry = leaderboardRepository.findById(playerId);
-        if (entry == null) {
-            logger.warn("Player {} not found", playerId);
-            throw new PlayerNotFoundException("Player not found: " + playerId);
-        }
-        entry.setScore(entry.getScore() + increment);
-        entry.setLastUpdated(Instant.now());
-        leaderboardRepository.save(entry); // update
-        return entry.getScore();
+        return Timer.builder("leaderboard.increment.score")
+                .tag("type", "caffeine")
+                .register(meterRegistry)
+                .record(() -> {
+                    logger.debug("Incrementing score for {} by {} in Caffeine service", playerId, increment);
+                    LeaderboardEntry entry = leaderboardRepository.findById(playerId);
+                    if (entry == null) {
+                        logger.warn("Player {} not found", playerId);
+                        throw new PlayerNotFoundException("Player not found: " + playerId);
+                    }
+                    entry.setScore(entry.getScore() + increment);
+                    entry.setLastUpdated(Instant.now());
+                    leaderboardRepository.save(entry);
+                    return entry.getScore();
+                });
     }
+
 
     @Override
     public List<LeaderboardEntry> getTopPlayers(int n) {

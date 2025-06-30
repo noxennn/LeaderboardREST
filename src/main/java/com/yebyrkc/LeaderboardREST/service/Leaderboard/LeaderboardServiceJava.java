@@ -3,6 +3,7 @@ package com.yebyrkc.LeaderboardREST.service.Leaderboard;
 import com.yebyrkc.LeaderboardREST.exception.PlayerNotFoundException;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import com.yebyrkc.LeaderboardREST.repository.LeaderboardRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,13 @@ public class LeaderboardServiceJava implements LeaderboardService {
     @Autowired
     private final LeaderboardRepository leaderboardRepository;
 
-    public LeaderboardServiceJava(LeaderboardRepository leaderboardRepository) {
+    private final MeterRegistry meterRegistry;
+
+    public LeaderboardServiceJava(LeaderboardRepository leaderboardRepository, MeterRegistry meterRegistry) {
         this.leaderboardRepository = leaderboardRepository;
+        this.meterRegistry = meterRegistry;
     }
+
 
     @Override
     public double incrementScore(String playerId, double increment) {

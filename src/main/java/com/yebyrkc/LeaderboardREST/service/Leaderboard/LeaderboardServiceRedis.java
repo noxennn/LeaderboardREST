@@ -3,6 +3,7 @@ package com.yebyrkc.LeaderboardREST.service.Leaderboard;
 
 import com.yebyrkc.LeaderboardREST.exception.PlayerNotFoundException;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,15 +24,20 @@ import java.util.*;
 public class LeaderboardServiceRedis implements LeaderboardService {
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final MeterRegistry meterRegistry;
 
     private static final Logger logger = LoggerFactory.getLogger(LeaderboardServiceRedis.class);
 
     private static final String LEADERBOARD_KEY = "leaderboard";
     private static final String PLAYER_HASH_PREFIX = "player:";
 
-    public LeaderboardServiceRedis(RedisTemplate<String, String> redisTemplate) {
+
+
+    public LeaderboardServiceRedis(RedisTemplate<String, String> redisTemplate, MeterRegistry meterRegistry) {
         this.redisTemplate = redisTemplate;
+        this.meterRegistry = meterRegistry;
     }
+
 
     @Override
     public double incrementScore(String playerId, double increment) {
