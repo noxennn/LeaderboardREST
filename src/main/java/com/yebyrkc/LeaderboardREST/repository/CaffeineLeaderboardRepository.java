@@ -6,6 +6,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @Primary
+@Profile("caffeine")
 public class CaffeineLeaderboardRepository implements LeaderboardRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(CaffeineLeaderboardRepository.class);

@@ -5,6 +5,6 @@ public interface PlayerGeneratorService {
      * Generates a specified number of players with random data
      * and inserts them into the leaderboard.
      */
-    void generatePlayers(int count);
+    void generatePlayerEntries(int count);
 }
 

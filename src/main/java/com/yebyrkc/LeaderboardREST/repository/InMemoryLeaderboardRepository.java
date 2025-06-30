@@ -4,6 +4,7 @@ import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Repository
 //@Primary
+@Profile("java")
 public class InMemoryLeaderboardRepository implements LeaderboardRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(InMemoryLeaderboardRepository.class);

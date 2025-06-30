@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 //@Primary
+@Profile("java")
 public class LeaderboardServiceJava implements LeaderboardService {
 
     private static final Logger logger = LoggerFactory.getLogger(LeaderboardServiceJava.class);
@@ -77,7 +79,7 @@ public class LeaderboardServiceJava implements LeaderboardService {
     }
 
     @Override
-    public void addPlayer(String playerId, String username, int level, double initialScore) {
+    public void addPlayerEntry(String playerId, String username, int level, double initialScore) {
         logger.debug("Adding player to Java service with playerId={}", playerId);
         leaderboardRepository.save(
                 new LeaderboardEntry(playerId, username, initialScore, level, Instant.now())
@@ -85,20 +87,20 @@ public class LeaderboardServiceJava implements LeaderboardService {
     }
 
     @Override
-    public void addPlayers(List<LeaderboardEntry> entries) {
+    public void addPlayerEntries(List<LeaderboardEntry> entries) {
         logger.debug("Adding {} players to Java service", entries.size());
         leaderboardRepository.saveAll(entries);
     }
 
     @Override
-    public void deletePlayer(String playerId) {
+    public void deletePlayerEntry(String playerId) {
         logger.debug("Deleting player {} from Java service", playerId);
         leaderboardRepository.delete(playerId);
 
     }
 
     @Override
-    public void deleteAllPlayers() {
+    public void deleteAllPlayerEntries() {
         logger.debug("Deleting all players from Java service");
         leaderboardRepository.deleteAll();
     }

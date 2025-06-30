@@ -3,7 +3,6 @@ package com.yebyrkc.LeaderboardREST.service.PlayerGenerator;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import com.yebyrkc.LeaderboardREST.service.Leaderboard.LeaderboardService;
-import com.yebyrkc.LeaderboardREST.service.PlayerGenerator.PlayerGeneratorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,11 @@ public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
     private static final Logger logger = LoggerFactory.getLogger(PlayerGeneratorServiceImpl.class);
 
     private final LeaderboardService leaderboardService;
+
      final SecureRandom secureRandom = new SecureRandom();
+
     final Random random = new Random();
+
     public  static final char[] chars= "0123456789".toCharArray();
 
     // Random username parts
@@ -60,7 +62,7 @@ public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
 
     //Generate Random users and add them to LeaderboardEntry
 //    @Override
-//    public void generatePlayers(int count) {
+//    public void generatePlayerEntries(int count) {
 //        for (int i = 1; i <= count; i++) {
 //            String playerId = "player:" + i;
 //
@@ -75,15 +77,16 @@ public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
 //            // score between 0 and 4500
 //            double score = 0 + random.nextDouble() * 4500;
 //
-//            leaderboardService.addPlayer(playerId, username, level, score);
+//            leaderboardService.addPlayerEntry(playerId, username, level, score);
 //        }
 //    }
     @Override
-    public void generatePlayers(int count) {
+    public void generatePlayerEntries(int count) {
         if (count <= 0) {
             throw new IllegalArgumentException("count must be greater than 0");
         }
         logger.debug("Generating {} players", count);
+
         List<LeaderboardEntry> entries = new ArrayList<>(count);
         for (int i = 1; i <= count; i++) {
             //using secureRandom only for nanoID generation, it is much slower than normal random
@@ -101,8 +104,10 @@ public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
             double score = 0 + random.nextDouble() * 4500;
             // random username, level, score as before
             entries.add(new LeaderboardEntry(playerId, username, score, level, Instant.now()));
-            logger.debug("Created player {}", playerId);
+
         }
-        leaderboardService.addPlayers(entries);  // single call
+        logger.debug("Created {}  players", count);
+
+        leaderboardService.addPlayerEntries(entries);  // single call
     }
 }

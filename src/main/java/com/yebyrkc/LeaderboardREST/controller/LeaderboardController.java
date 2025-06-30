@@ -70,19 +70,19 @@ public class LeaderboardController {
             @RequestParam double score
     ) {
         logger.debug("Adding player via controller with playerId={}", playerId);
-        leaderboardService.addPlayer(playerId, username, level, score);
+        leaderboardService.addPlayerEntry(playerId, username, level, score);
     }
     @DeleteMapping("/player")
     public  ResponseEntity<String> deletePlayer(@RequestParam String playerId){
         logger.debug("Deleting player with id={}", playerId);
-        leaderboardService.deletePlayer(playerId);
+        leaderboardService.deletePlayerEntry(playerId);
         return ResponseEntity.ok("Succesfully deleted player with playerId: "+playerId);
     }
 
     @DeleteMapping("/players")
     public ResponseEntity<String> deleteAllPlayers(){
         logger.debug("Deleting all players through controller");
-        leaderboardService.deleteAllPlayers();
+        leaderboardService.deleteAllPlayerEntries();
         return ResponseEntity.ok("Succesfully deleted all players");
     }
 

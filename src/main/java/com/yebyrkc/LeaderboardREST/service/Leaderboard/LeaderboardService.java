@@ -14,11 +14,12 @@ public interface LeaderboardService {
 
     long getPlayerRank(String playerId);
 
-    void addPlayer(String playerId, String username, int level, double initialScore);
+    void addPlayerEntry(String playerId, String username, int level, double initialScore);
 
-    void addPlayers(List<LeaderboardEntry> entries);
+    void addPlayerEntries(List<LeaderboardEntry> entries);
 
-    void deletePlayer(String playerId);
+    void deletePlayerEntry(String playerId);
 
-    void deleteAllPlayers();
+    void deleteAllPlayerEntries();
+
 }
