@@ -25,16 +25,11 @@ public class LeaderboardController {
     @Autowired
     private LeaderboardRepository leaderboardRepository;
 
-
     @Autowired
     private LeaderboardService leaderboardService;
 
-
     @Autowired
     private PlayerGenerator playerGenerator;
-
-
-
 
     /**
      * Get top N players
