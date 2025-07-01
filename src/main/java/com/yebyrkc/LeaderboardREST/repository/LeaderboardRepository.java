@@ -1,14 +1,25 @@
 package com.yebyrkc.LeaderboardREST.repository;
 
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 public interface LeaderboardRepository {
-    void save(LeaderboardEntry entry);
-    void saveAll(List<LeaderboardEntry> entries);
-    LeaderboardEntry findById(String playerId);
-    List<LeaderboardEntry> findAll();
-    void delete(String playerId);
-    void deleteAll();
+
+    double incrementScore(String playerId, double increment);
+
+    List<LeaderboardEntry> getTopPlayers(int n);
+
+    LeaderboardEntry getPlayer(String playerId);
+
+    long getPlayerRank(String playerId);
+
+    void addPlayerEntry(String playerId, String username, int level, double initialScore);
+
+    void addPlayerEntries(List<LeaderboardEntry> entries);
+
+    void deletePlayerEntry(String playerId);
+
+    void deleteAllPlayerEntries();
 }

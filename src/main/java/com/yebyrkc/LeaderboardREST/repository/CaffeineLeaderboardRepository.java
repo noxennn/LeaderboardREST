@@ -1,21 +1,23 @@
 package com.yebyrkc.LeaderboardREST.repository;
 
+import com.yebyrkc.LeaderboardREST.exception.PlayerNotFoundException;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
-@Primary
 @Profile("caffeine")
 public class CaffeineLeaderboardRepository implements LeaderboardRepository {
 
@@ -31,15 +33,49 @@ public class CaffeineLeaderboardRepository implements LeaderboardRepository {
                 .build();
     }
 
+
     @Override
-    public void save(LeaderboardEntry entry) {
-        logger.debug("Saving player {} in Caffeine cache", entry.getPlayerId());
+    public double incrementScore(String playerId, double increment) {
+
+        LeaderboardEntry entry = cache.getIfPresent(playerId);
+        entry.setScore(entry.getScore() + increment);
+        entry.setLastUpdated(Instant.now());
         cache.put(entry.getPlayerId(), entry);
+
+        return entry.getScore();
+    }
+
+
+    @Override
+    public List<LeaderboardEntry> getTopPlayers(int n) {
+
+        return new ArrayList<>(cache.asMap().values()).stream()
+                .sorted((a, b) -> Double.compare(b.getScore(), a.getScore()))
+                .limit(n)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void saveAll(List<LeaderboardEntry> entries) {
-        logger.debug("Saving {} players in Caffeine cache", entries.size());
+    public LeaderboardEntry getPlayer(String playerId) {
+        return cache.getIfPresent(playerId);
+    }
+
+    @Override
+    public long getPlayerRank(String playerId) {
+        LeaderboardEntry player = cache.getIfPresent(playerId);
+        return new ArrayList<>(cache.asMap().values()).stream()
+                .filter(e -> e.getScore() > player.getScore())
+                .count() + 1;
+    }
+
+    @Override
+    public void addPlayerEntry(String playerId, String username, int level, double initialScore) {
+        cache.put(playerId, new LeaderboardEntry(playerId, username, initialScore, level, Instant.now()));
+    }
+
+    @Override
+    public void addPlayerEntries(List<LeaderboardEntry> entries) {
+
         Map<String, LeaderboardEntry> map = entries.stream()
                 .collect(Collectors.toMap(
                         LeaderboardEntry::getPlayerId,
@@ -50,26 +86,12 @@ public class CaffeineLeaderboardRepository implements LeaderboardRepository {
     }
 
     @Override
-    public LeaderboardEntry findById(String playerId) {
-        logger.debug("Finding player {} in Caffeine cache", playerId);
-        return cache.getIfPresent(playerId);
-    }
-
-    @Override
-    public List<LeaderboardEntry> findAll() {
-        logger.debug("Fetching all players from Caffeine cache");
-        return new ArrayList<>(cache.asMap().values());
-    }
-
-    @Override
-    public void delete(String playerId) {
-        logger.debug("Deleting player {} from Caffeine cache", playerId);
+    public void deletePlayerEntry(String playerId) {
         cache.invalidate(playerId);
     }
 
     @Override
-    public void deleteAll() {
-        logger.debug("Clearing all players from Caffeine cache");
+    public void deleteAllPlayerEntries() {
         cache.invalidateAll();
     }
 }

@@ -1,25 +1,49 @@
 package com.yebyrkc.LeaderboardREST.service.Leaderboard;
 
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
+import com.yebyrkc.LeaderboardREST.repository.LeaderboardRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public interface LeaderboardService {
+@Service
+public class LeaderboardService {
 
-    double incrementScore(String playerId, double increment);
+    private final LeaderboardRepository repository;
 
-    List<LeaderboardEntry> getTopPlayers(int n);
+    public LeaderboardService(LeaderboardRepository repository) {
+        this.repository = repository;
+    }
 
-    LeaderboardEntry getPlayer(String playerId);
+    public double incrementScore(String playerId, double increment) {
+        return repository.incrementScore(playerId, increment);
+    }
 
-    long getPlayerRank(String playerId);
+    public List<LeaderboardEntry> getTopPlayers(int n) {
+        return repository.getTopPlayers(n);
+    }
 
-    void addPlayerEntry(String playerId, String username, int level, double initialScore);
+    public LeaderboardEntry getPlayer(String playerId) {
+        return repository.getPlayer(playerId);
+    }
 
-    void addPlayerEntries(List<LeaderboardEntry> entries);
+    public long getPlayerRank(String playerId) {
+        return repository.getPlayerRank(playerId);
+    }
 
-    void deletePlayerEntry(String playerId);
+    public void addPlayerEntry(String playerId, String username, int level, double initialScore) {
+        repository.addPlayerEntry(playerId, username, level, initialScore);
+    }
 
-    void deleteAllPlayerEntries();
+    public void addPlayerEntries(List<LeaderboardEntry> entries) {
+        repository.addPlayerEntries(entries);
+    }
 
+    public void deletePlayerEntry(String playerId) {
+        repository.deletePlayerEntry(playerId);
+    }
+
+    public void deleteAllPlayerEntries() {
+        repository.deleteAllPlayerEntries();
+    }
 }

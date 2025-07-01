@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
+public class PlayerGenerator {
 
-    private static final Logger logger = LoggerFactory.getLogger(PlayerGeneratorServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(PlayerGenerator.class);
 
     private final LeaderboardService leaderboardService;
 
@@ -26,7 +26,10 @@ public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
     final Random random = new Random();
 
     public  static final char[] chars= "0123456789".toCharArray();
-
+    @Autowired
+    public PlayerGenerator(LeaderboardService leaderboardService) {
+        this.leaderboardService = leaderboardService;
+    }
     // Random username parts
     private static final String[] NAME_PREFIXES = {
             "Swift", "Night", "Golden", "Cyber", "Silent", "Fierce",
@@ -55,10 +58,7 @@ public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
     //Can be converted to UUID later
     private static final int MAX_NUMBER_SUFFIX = 9999;
 
-    @Autowired
-    public PlayerGeneratorServiceImpl(LeaderboardService leaderboardService) {
-        this.leaderboardService = leaderboardService;
-    }
+
 
     //Generate Random users and add them to LeaderboardEntry
 //    @Override
@@ -80,7 +80,7 @@ public class PlayerGeneratorServiceImpl implements PlayerGeneratorService {
 //            leaderboardService.addPlayerEntry(playerId, username, level, score);
 //        }
 //    }
-    @Override
+
     public void generatePlayerEntries(int count) {
         if (count <= 0) {
             throw new IllegalArgumentException("count must be greater than 0");

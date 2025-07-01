@@ -1,7 +1,12 @@
 package com.yebyrkc.LeaderboardREST.controller;
 
+import com.yebyrkc.LeaderboardREST.dto.IncrementRequestDTO;
+import com.yebyrkc.LeaderboardREST.dto.LeaderboardEntryDTO;
+import com.yebyrkc.LeaderboardREST.dto.PlayerGenerationRequestDTO;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
+import com.yebyrkc.LeaderboardREST.repository.LeaderboardRepository;
 import com.yebyrkc.LeaderboardREST.service.Leaderboard.LeaderboardService;
+import com.yebyrkc.LeaderboardREST.service.PlayerGenerator.PlayerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,22 +21,20 @@ public class LeaderboardController {
 
     private static final Logger logger = LoggerFactory.getLogger(LeaderboardController.class);
 
+
     @Autowired
-    private  LeaderboardService leaderboardService;
+    private LeaderboardRepository leaderboardRepository;
+
+
+    @Autowired
+    private LeaderboardService leaderboardService;
+
+
+    @Autowired
+    private PlayerGenerator playerGenerator;
 
 
 
-    /**
-     * Increment a player's score
-     */
-    @PostMapping("/{playerId}/increment")
-    public double incrementScore(
-            @PathVariable String playerId,
-            @RequestParam double incrementBy
-    ) {
-        logger.debug("Incrementing score for playerId={} by {}", playerId, incrementBy);
-        return leaderboardService.incrementScore(playerId, incrementBy);
-    }
 
     /**
      * Get top N players
@@ -46,7 +49,7 @@ public class LeaderboardController {
      * Get a player's data
      */
     @GetMapping("/{playerId}")
-    public LeaderboardEntry getPlayer(@PathVariable String playerId) {
+    public LeaderboardEntry getLeaderboardEntry(@PathVariable String playerId) {
         logger.debug("Fetching player with id={}", playerId);
         return leaderboardService.getPlayer(playerId);
     }
@@ -59,31 +62,52 @@ public class LeaderboardController {
         logger.debug("Fetching rank for playerId={}", playerId);
         return leaderboardService.getPlayerRank(playerId);
     }
+
+    /**
+     * Increment a player's score
+     */
+    @PostMapping("/{playerId}/score/incrementBy")
+    public double incrementScore(@RequestBody IncrementRequestDTO dto) {
+        logger.debug("Incrementing score for playerId={} by {}", dto.getPlayerId(), dto.getIncrementBy());
+        return leaderboardService.incrementScore(dto.getPlayerId(), dto.getIncrementBy());
+    }
+
     /** Add new player to LeaderboardEntry
      *
      */
     @PostMapping("/player")
-    public void addPlayer(
-            @RequestParam String playerId,
-            @RequestParam String username,
-            @RequestParam int level,
-            @RequestParam double score
-    ) {
-        logger.debug("Adding player via controller with playerId={}", playerId);
-        leaderboardService.addPlayerEntry(playerId, username, level, score);
+    public void addLeaderboardEntry(@RequestBody LeaderboardEntryDTO dto) {
+        logger.debug("Adding player via controller with playerId={}", dto.getPlayerId());
+        leaderboardService.addPlayerEntry(dto.getPlayerId(), dto.getUsername(), dto.getLevel(), dto.getScore());
     }
+
+    /** Generate new players for Leaderboard
+     *
+     */
+    @PostMapping("/players")
+    public ResponseEntity<String> generateLeaderboardEntries(@RequestBody PlayerGenerationRequestDTO dto) {
+        logger.debug("Generating {} players via controller", dto.getCount());
+        playerGenerator.generatePlayerEntries(dto.getCount());
+        return ResponseEntity.ok("Successfully generated " + dto.getCount() + " players.");
+    }
+
+    /** Delete existing player from LeaderboardEntry
+     *
+     */
     @DeleteMapping("/player")
-    public  ResponseEntity<String> deletePlayer(@RequestParam String playerId){
+    public  ResponseEntity<String> deleteLeaderboardEntry(@RequestParam String playerId){
         logger.debug("Deleting player with id={}", playerId);
         leaderboardService.deletePlayerEntry(playerId);
         return ResponseEntity.ok("Succesfully deleted player with playerId: "+playerId);
     }
 
     @DeleteMapping("/players")
-    public ResponseEntity<String> deleteAllPlayers(){
+    public ResponseEntity<String> deleteAllLeaderboardEntries(){
         logger.debug("Deleting all players through controller");
         leaderboardService.deleteAllPlayerEntries();
         return ResponseEntity.ok("Succesfully deleted all players");
     }
+
+
 
 }
