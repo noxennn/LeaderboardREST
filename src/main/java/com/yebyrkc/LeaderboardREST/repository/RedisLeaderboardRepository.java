@@ -82,58 +82,125 @@ public class RedisLeaderboardRepository implements LeaderboardRepository{
             //from player Hashes (we are not storing player attributes in leaderboard set actually,
             // we need to get them from hashes
             List<LeaderboardEntry> result = new ArrayList<>();
-            if (top != null) {
-                List<String> playerIds = top.stream().map(ZSetOperations.TypedTuple::getValue).toList();
-                List<Double> scores = top.stream().map(ZSetOperations.TypedTuple::getScore).toList();
+            if (top == null) {
+                return  result ;
+            }
+            List<String> playerIds = top.stream().map(ZSetOperations.TypedTuple::getValue).toList();
+            List<Double> scores = top.stream().map(ZSetOperations.TypedTuple::getScore).toList();
 
-                //get hashes of players (in byte format)
-                // Pipelined HMGET for each player
-                List<Object> hashResults = redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
-                    for (String id : playerIds) {
-                        //convert playerId's into bytes
-                        byte[] key = id.getBytes(StandardCharsets.UTF_8);
-                        //HMGET with byte key and byte field names
-                        connection.hashCommands().hMGet(
-                                key,
-                                "username".getBytes(StandardCharsets.UTF_8),
-                                "level".getBytes(StandardCharsets.UTF_8),
-                                "lastUpdated".getBytes(StandardCharsets.UTF_8)
-                        );
+            //get hashes of players (in byte format)
+            // Pipelined HMGET for each player
+            List<Object> hashResults = redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
+                for (String id : playerIds) {
+                    //convert playerId's into bytes
+                    byte[] key = id.getBytes(StandardCharsets.UTF_8);
+                    //HMGET with byte key and byte field names
+                    connection.hashCommands().hMGet(
+                            key,
+                            "username".getBytes(StandardCharsets.UTF_8),
+                            "level".getBytes(StandardCharsets.UTF_8),
+                            "lastUpdated".getBytes(StandardCharsets.UTF_8)
+                    );
 
-                    }
-                    return null;
-                });
+                }
+                return null;
+            });
 
-                //convert byte hashes  and create the LeaderboardEntry
-                for (int i = 0; i < playerIds.size(); i++) {
-                    //get playerId from list
-                    String playerId = playerIds.get(i);
+            //convert byte hashes  and create the LeaderboardEntry
+            for (int i = 0; i < playerIds.size(); i++) {
+                //get playerId from list
+                String playerId = playerIds.get(i);
 
-                    double score = scores.get(i) != null ? scores.get(i) : 0.0;
+                double score = scores.get(i) != null ? scores.get(i) : 0.0;
 
 //            @SuppressWarnings("unchecked")
 //            List<byte[]> values = (List<byte[]>) hashResults.get(i);
 
-                    @SuppressWarnings("unchecked")
-                    List<String> values = (List<String>) hashResults.get(i);
-                    //decode bytes to Strings
-                    String username = values.get(0) ;
-                    String levelStr = values.get(1) ;
-                    String lastUpdatedStr = values.get(2) ;
+                @SuppressWarnings("unchecked")
+                List<String> values = (List<String>) hashResults.get(i);
+                //decode bytes to Strings
+                String username = values.get(0) ;
+                String levelStr = values.get(1) ;
+                String lastUpdatedStr = values.get(2) ;
 
-                    int level = levelStr != null ? Integer.parseInt(levelStr) : 0;
-                    Instant lastUpdated = lastUpdatedStr != null ? Instant.ofEpochSecond(Long.parseLong(lastUpdatedStr)) : Instant.now();
+                int level = levelStr != null ? Integer.parseInt(levelStr) : 0;
+                Instant lastUpdated = lastUpdatedStr != null ? Instant.ofEpochSecond(Long.parseLong(lastUpdatedStr)) : Instant.now();
 
-                    //create entry
-                    result.add(new LeaderboardEntry(playerId, username, score, level, lastUpdated));
-                }
+                //create entry
+                result.add(new LeaderboardEntry(playerId, username, score, level, lastUpdated));
             }
             //return list of entries
             return result;
         }
+//    @Override
+//    public List<LeaderboardEntry> getTopPlayers(int n) {
+//        if (n <= 0) {
+//            throw new IllegalArgumentException("n must be greater than 0");
+//        }
+//        logger.debug("Retrieving top {} players from Redis", n);
+//
+//        // Step 1: Get the top N players from the Sorted Set
+//        Set<ZSetOperations.TypedTuple<String>> top = redisTemplate.opsForZSet()
+//                .reverseRangeWithScores(LEADERBOARD_KEY, 0, n - 1);
+//
+//        // Step 2: Early return if no players
+//        if (top == null || top.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        // Step 3: Separate out player IDs and scores using Java Streams (streaming approach)
+//        List<String> playerIds = top.stream()
+//                .map(ZSetOperations.TypedTuple::getValue)
+//                .collect(Collectors.toList());
+//
+//        List<Double> scores = top.stream()
+//                .map(ZSetOperations.TypedTuple::getScore)
+//                .collect(Collectors.toList());
+//
+//        // Step 4: Fetch player details in a pipelined approach
+//        List<Object> hashResults = redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
+//            for (String playerId : playerIds) {
+//                byte[] key = playerId.getBytes(StandardCharsets.UTF_8);
+//                connection.hashCommands().hMGet(
+//                        key,
+//                        "username".getBytes(StandardCharsets.UTF_8),
+//                        "level".getBytes(StandardCharsets.UTF_8),
+//                        "lastUpdated".getBytes(StandardCharsets.UTF_8)
+//                );
+//            }
+//            return null;
+//        });
+//
+//        // Step 5: Convert the results and stream processing
+//        List<LeaderboardEntry> result = new ArrayList<>();
+//        Iterator<String> playerIdIterator = playerIds.iterator();
+//        Iterator<Double> scoreIterator = scores.iterator();
+//        Iterator<Object> hashResultIterator = hashResults.iterator();
+//
+//        while (playerIdIterator.hasNext() && hashResultIterator.hasNext() && scoreIterator.hasNext()) {
+//            String playerId = playerIdIterator.next();
+//            Double score = scoreIterator.next();
+//
+//            @SuppressWarnings("unchecked")
+//            List<String> values = (List<String>) hashResultIterator.next();
+//            String username = values.get(0);
+//            String levelStr = values.get(1);
+//            String lastUpdatedStr = values.get(2);
+//
+//            int level = levelStr != null ? Integer.parseInt(levelStr) : 0;
+//            Instant lastUpdated = lastUpdatedStr != null ? Instant.ofEpochSecond(Long.parseLong(lastUpdatedStr)) : Instant.now();
+//
+//            // Create leaderboard entry and add to the result list
+//            result.add(new LeaderboardEntry(playerId, username, score != null ? score : 0.0, level, lastUpdated));
+//        }
+//
+//        // Return the combined list of leaderboard entries
+//        return result;
+//    }
 
 
-        @Override
+
+    @Override
         public LeaderboardEntry getPlayer(String playerId) {
             logger.debug("Retrieving player {} from Redis", playerId);
             Double score = redisTemplate.opsForZSet().score(LEADERBOARD_KEY, playerId);
