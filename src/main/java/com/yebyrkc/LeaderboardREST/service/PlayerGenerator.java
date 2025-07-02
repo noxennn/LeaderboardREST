@@ -100,7 +100,7 @@ public class PlayerGenerator {
             int level = 1 + random.nextInt(50);
 
             // score between 0 and 4500
-            double score = 0 + random.nextDouble() * 4500;
+            double score = 0 + random.nextInt(100000);
             // random username, level, score as before
             entries.add(new LeaderboardEntry(playerId, username, score, level, Instant.now()));
 
