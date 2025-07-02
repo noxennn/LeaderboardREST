@@ -1,8 +1,7 @@
-package com.yebyrkc.LeaderboardREST.service.PlayerGenerator;
+package com.yebyrkc.LeaderboardREST.service;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
-import com.yebyrkc.LeaderboardREST.service.Leaderboard.LeaderboardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +89,7 @@ public class PlayerGenerator {
         List<LeaderboardEntry> entries = new ArrayList<>(count);
         for (int i = 1; i <= count; i++) {
             //using secureRandom only for nanoID generation, it is much slower than normal random
-            String playerId = "player:" + NanoIdUtils.randomNanoId(secureRandom,chars,10);
+            String playerId = "player:" + NanoIdUtils.randomNanoId(secureRandom,chars,7);
             
 //             username like SwiftTiger123
             String username = NAME_PREFIXES[random.nextInt(NAME_PREFIXES.length)]
