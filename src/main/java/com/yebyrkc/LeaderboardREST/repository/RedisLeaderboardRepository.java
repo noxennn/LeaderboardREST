@@ -5,21 +5,14 @@ import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 
-@Repository
-
-@Profile("redis")
 public class RedisLeaderboardRepository implements LeaderboardRepository{
 
         private final RedisTemplate<String, String> redisTemplate;

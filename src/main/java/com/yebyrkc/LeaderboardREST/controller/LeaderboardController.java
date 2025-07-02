@@ -4,7 +4,6 @@ import com.yebyrkc.LeaderboardREST.dto.IncrementRequestDTO;
 import com.yebyrkc.LeaderboardREST.dto.LeaderboardEntryDTO;
 import com.yebyrkc.LeaderboardREST.dto.PlayerGenerationRequestDTO;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
-import com.yebyrkc.LeaderboardREST.repository.LeaderboardRepository;
 import com.yebyrkc.LeaderboardREST.service.Leaderboard.LeaderboardService;
 import com.yebyrkc.LeaderboardREST.service.PlayerGenerator.PlayerGenerator;
 import org.slf4j.Logger;
@@ -22,8 +21,6 @@ public class LeaderboardController {
     private static final Logger logger = LoggerFactory.getLogger(LeaderboardController.class);
 
 
-    @Autowired
-    private LeaderboardRepository leaderboardRepository;
 
     @Autowired
     private LeaderboardService leaderboardService;
