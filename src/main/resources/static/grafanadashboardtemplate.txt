@@ -1,0 +1,173 @@
+{
+  "title": "Leaderboard Metrics",
+   "uid": "leaderboard-dashboard",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Leaderboard Increment Score Latency",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(leaderboard_increment_score_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p50",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(leaderboard_increment_score_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p95",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(leaderboard_increment_score_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p99",
+            "refId": "C"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxis": {
+          "format": "s",
+          "label": "Latency (s)"
+        }
+      },
+      {
+        "type": "graph",
+        "title": "Leaderboard Increment Score Throughput",
+        "targets": [
+          {
+            "expr": "rate(leaderboard_increment_score_seconds_count{type=\"your_type_tag\"}[5m])",
+            "interval": "",
+            "legendFormat": "Throughput",
+            "refId": "A"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxis": {
+          "format": "ops",
+          "label": "Ops/s"
+        }
+      },
+      {
+        "type": "graph",
+        "title": "Leaderboard Increment Score Operations per Second",
+        "targets": [
+          {
+            "expr": "rate(leaderboard_increment_score_seconds_count{type=\"your_type_tag\"}[5m])",
+            "interval": "",
+            "legendFormat": "Ops/s",
+            "refId": "A"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxis": {
+          "format": "ops",
+          "label": "Ops/s"
+        }
+      },
+      {
+        "type": "graph",
+        "title": "Leaderboard Get Top Players Latency",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(leaderboard_get_top_players_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p50",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(leaderboard_get_top_players_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p95",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(leaderboard_get_top_players_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p99",
+            "refId": "C"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxis": {
+          "format": "s",
+          "label": "Latency (s)"
+        }
+      },
+      {
+        "type": "graph",
+        "title": "Leaderboard Get Player Latency",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(leaderboard_get_player_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p50",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(leaderboard_get_player_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p95",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(leaderboard_get_player_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p99",
+            "refId": "C"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxis": {
+          "format": "s",
+          "label": "Latency (s)"
+        }
+      },
+      {
+        "type": "graph",
+        "title": "Leaderboard Add Player Latency",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(leaderboard_add_player_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p50",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(leaderboard_add_player_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p95",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(leaderboard_add_player_seconds_bucket{type=\"your_type_tag\"}[5m]))",
+            "interval": "",
+            "legendFormat": "p99",
+            "refId": "C"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxis": {
+          "format": "s",
+          "label": "Latency (s)"
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+
+}
