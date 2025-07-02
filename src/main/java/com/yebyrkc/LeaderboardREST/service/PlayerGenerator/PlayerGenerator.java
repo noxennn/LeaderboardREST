@@ -108,6 +108,6 @@ public class PlayerGenerator {
         }
         logger.debug("Created {}  players", count);
 
-        leaderboardService.addPlayerEntries(entries);  // single call
+        leaderboardService.addPlayerEntriesToAll(entries);
     }
 }
