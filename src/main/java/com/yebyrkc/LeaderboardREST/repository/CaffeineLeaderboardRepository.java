@@ -36,19 +36,16 @@ public class CaffeineLeaderboardRepository implements LeaderboardRepository {
 
     @Override
     public double incrementScore(String playerId, double increment) {
-
         LeaderboardEntry entry = cache.getIfPresent(playerId);
         entry.setScore(entry.getScore() + increment);
         entry.setLastUpdated(Instant.now());
         cache.put(entry.getPlayerId(), entry);
-
         return entry.getScore();
     }
 
 
     @Override
     public List<LeaderboardEntry> getTopPlayers(int n) {
-
         return new ArrayList<>(cache.asMap().values()).stream()
                 .sorted((a, b) -> Double.compare(b.getScore(), a.getScore()))
                 .limit(n)
@@ -75,7 +72,6 @@ public class CaffeineLeaderboardRepository implements LeaderboardRepository {
 
     @Override
     public void addPlayerEntries(List<LeaderboardEntry> entries) {
-
         Map<String, LeaderboardEntry> map = entries.stream()
                 .collect(Collectors.toMap(
                         LeaderboardEntry::getPlayerId,

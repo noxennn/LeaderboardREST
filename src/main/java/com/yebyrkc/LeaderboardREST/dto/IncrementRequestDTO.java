@@ -1,7 +1,6 @@
 package com.yebyrkc.LeaderboardREST.dto;
 
 public class IncrementRequestDTO {
-    String playerId;
     double incrementBy;
 
     public double getIncrementBy() {
@@ -12,11 +11,7 @@ public class IncrementRequestDTO {
         this.incrementBy = incrementBy;
     }
 
-    public String getPlayerId() {
-        return playerId;
-    }
 
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
-    }
+
+
 }

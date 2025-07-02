@@ -5,8 +5,8 @@ import com.yebyrkc.LeaderboardREST.dto.LeaderboardEntryDTO;
 import com.yebyrkc.LeaderboardREST.dto.PlayerGenerationRequestDTO;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import com.yebyrkc.LeaderboardREST.repository.LeaderboardRepository;
-import com.yebyrkc.LeaderboardREST.service.Leaderboard.LeaderboardService;
-import com.yebyrkc.LeaderboardREST.service.PlayerGenerator.PlayerGenerator;
+import com.yebyrkc.LeaderboardREST.service.LeaderboardService;
+import com.yebyrkc.LeaderboardREST.service.PlayerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +62,9 @@ public class LeaderboardController {
      * Increment a player's score
      */
     @PostMapping("/{playerId}/score/incrementBy")
-    public double incrementScore(@RequestBody IncrementRequestDTO dto) {
-        logger.debug("Incrementing score for playerId={} by {}", dto.getPlayerId(), dto.getIncrementBy());
-        return leaderboardService.incrementScore(dto.getPlayerId(), dto.getIncrementBy());
+    public double incrementScore(@PathVariable String playerId,@RequestBody IncrementRequestDTO dto) {
+        logger.debug("Incrementing score for playerId={} by {}", playerId, dto.getIncrementBy());
+        return leaderboardService.incrementScore(playerId, dto.getIncrementBy());
     }
 
     /** Add new player to LeaderboardEntry
@@ -93,14 +93,14 @@ public class LeaderboardController {
     public  ResponseEntity<String> deleteLeaderboardEntry(@RequestParam String playerId){
         logger.debug("Deleting player with id={}", playerId);
         leaderboardService.deletePlayerEntry(playerId);
-        return ResponseEntity.ok("Succesfully deleted player with playerId: "+playerId);
+        return ResponseEntity.ok("Successfully deleted player with playerId: "+playerId);
     }
 
     @DeleteMapping("/players")
     public ResponseEntity<String> deleteAllLeaderboardEntries(){
         logger.debug("Deleting all players through controller");
         leaderboardService.deleteAllPlayerEntries();
-        return ResponseEntity.ok("Succesfully deleted all players");
+        return ResponseEntity.ok("Successfully deleted all players");
     }
 
 
