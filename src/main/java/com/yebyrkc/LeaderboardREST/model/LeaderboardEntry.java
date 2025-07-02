@@ -1,11 +1,16 @@
 package com.yebyrkc.LeaderboardREST.model;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.yebyrkc.LeaderboardREST.config.ToIntegerFormatSerializer;
+
 import java.time.Instant;
 
 public class LeaderboardEntry {
     private String playerId;
     private String username;
+
+    @JsonSerialize(using = ToIntegerFormatSerializer.class)
     private double score;
     private int level;
     private Instant lastUpdated;
