@@ -17,13 +17,13 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 
-@Repository
+
 
 @Profile("redis")
 public class RedisLeaderboardRepository implements LeaderboardRepository{
 
         private final RedisTemplate<String, String> redisTemplate;
-        private final MeterRegistry meterRegistry;
+
 
         private static final Logger logger = LoggerFactory.getLogger(RedisLeaderboardRepository.class);
 
@@ -32,9 +32,8 @@ public class RedisLeaderboardRepository implements LeaderboardRepository{
 
 
 
-        public RedisLeaderboardRepository(RedisTemplate<String, String> redisTemplate, MeterRegistry meterRegistry) {
+        public RedisLeaderboardRepository(RedisTemplate<String, String> redisTemplate  ) {
             this.redisTemplate = redisTemplate;
-            this.meterRegistry = meterRegistry;
         }
 
 
