@@ -25,7 +25,8 @@ public class LeaderboardRepositoryConfig {
     @Bean
     @Profile("redis")
     public LeaderboardRepository redisRepository(MeterRegistry meterRegistry, RedisTemplate<String, String> redisTemplate) {
-        LeaderboardRepository impl = new RedisLeaderboardRepository(redisTemplate);
+        LeaderboardRepository impl = new RedisSortedSetLeaderboardRepository(redisTemplate);
         return new InstrumentedLeaderboardRepository(impl, meterRegistry, "redis");
     }
+
 }

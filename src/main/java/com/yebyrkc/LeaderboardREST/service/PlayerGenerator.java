@@ -20,7 +20,7 @@ public class PlayerGenerator {
 
     private final LeaderboardService leaderboardService;
 
-     final SecureRandom secureRandom = new SecureRandom();
+//     final SecureRandom secureRandom = new SecureRandom();
 
     final Random random = new Random();
 
@@ -98,7 +98,7 @@ public class PlayerGenerator {
                     + random.nextInt(MAX_NUMBER_SUFFIX);
 
             // level 1-50
-            int level = 1 + random.nextInt(50);
+            int level = 1 + random.nextInt(150);
 
             // score between 0 and 4500
             double score = 0 + random.nextInt(1000000);

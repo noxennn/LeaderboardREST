@@ -5,7 +5,8 @@ management:
   endpoints:
     web:
       exposure:
-        include: prometheus, health, info, metrics
+        include: prometheus
+#        , health, info, metrics
   endpoint:
     prometheus:
       enabled: true
