@@ -38,7 +38,6 @@ public class CaffeineLeaderboardRepository implements LeaderboardRepository {
     public double incrementScore(String playerId, double increment) {
         LeaderboardEntry entry = cache.getIfPresent(playerId);
         entry.setScore(entry.getScore() + increment);
-        entry.setLastUpdated(Instant.now());
         cache.put(entry.getPlayerId(), entry);
         return entry.getScore();
     }
@@ -67,7 +66,7 @@ public class CaffeineLeaderboardRepository implements LeaderboardRepository {
 
     @Override
     public void addPlayerEntry(String playerId, String username, int level, double initialScore) {
-        cache.put(playerId, new LeaderboardEntry(playerId, username, initialScore, level, Instant.now()));
+        cache.put(playerId, new LeaderboardEntry(playerId, username, initialScore, level));
     }
 
     @Override

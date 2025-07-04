@@ -29,7 +29,6 @@ public class InMemoryLeaderboardRepository implements LeaderboardRepository {
         LeaderboardEntry entry = store.get(playerId);
 
         entry.setScore(entry.getScore() + increment);
-        entry.setLastUpdated(Instant.now());
         store.put(entry.getPlayerId(), entry); // persist update
         return entry.getScore();
     }
@@ -63,7 +62,7 @@ public class InMemoryLeaderboardRepository implements LeaderboardRepository {
 
     @Override
     public void addPlayerEntry(String playerId, String username, int level, double initialScore) {
-        store.put(playerId, new LeaderboardEntry(playerId, username, initialScore, level, Instant.now()));
+        store.put(playerId, new LeaderboardEntry(playerId, username, initialScore, level));
     }
 
     @Override

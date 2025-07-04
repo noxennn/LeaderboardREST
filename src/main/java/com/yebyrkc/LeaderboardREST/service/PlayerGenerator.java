@@ -89,7 +89,7 @@ public class PlayerGenerator {
         List<LeaderboardEntry> entries = new ArrayList<>(count);
         for (int i = 1; i <= count; i++) {
             //using secureRandom only for nanoID generation, it is much slower than normal random
-            String playerId = ""+i;
+            String playerId = "player:"+i;
 //          String playerId = "player:" + NanoIdUtils.randomNanoId(secureRandom,chars,7);
             
 //             username like SwiftTiger123
@@ -103,7 +103,7 @@ public class PlayerGenerator {
             // score between 0 and 4500
             double score = 0 + random.nextInt(1000000);
             // random username, level, score as before
-            entries.add(new LeaderboardEntry(playerId, username, score, level, Instant.now()));
+            entries.add(new LeaderboardEntry(playerId, username, score, level));
 
         }
         logger.debug("Created {}  players", count);

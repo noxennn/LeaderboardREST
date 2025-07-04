@@ -13,16 +13,16 @@ public class LeaderboardEntry {
     @JsonSerialize(using = ToIntegerFormatSerializer.class)
     private double score;
     private int level;
-    private Instant lastUpdated;
+
 
     public LeaderboardEntry() {}
 
-    public LeaderboardEntry(String playerId, String username, double score, int level, Instant lastUpdated) {
+    public LeaderboardEntry(String playerId, String username, double score, int level) {
         this.playerId = playerId;
         this.username = username;
         this.score = score;
         this.level = level;
-        this.lastUpdated = lastUpdated;
+
     }
 
     public String getPlayerId() {
@@ -57,12 +57,5 @@ public class LeaderboardEntry {
         this.level = level;
     }
 
-    public Instant getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(Instant lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
 }
 

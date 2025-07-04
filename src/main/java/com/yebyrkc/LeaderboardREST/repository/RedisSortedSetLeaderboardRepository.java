@@ -44,8 +44,6 @@ public class RedisSortedSetLeaderboardRepository implements LeaderboardRepositor
             }
 
             // Update time
-            // stamp in hash
-            redisTemplate.opsForHash().put(PLAYER_HASH_PREFIX + playerId, "lastUpdated", String.valueOf(Instant.now().getEpochSecond()));
             return newScore;
         }
 
@@ -93,8 +91,7 @@ public class RedisSortedSetLeaderboardRepository implements LeaderboardRepositor
                     connection.hashCommands().hMGet(
                             key,
                             "username".getBytes(StandardCharsets.UTF_8),
-                            "level".getBytes(StandardCharsets.UTF_8),
-                            "lastUpdated".getBytes(StandardCharsets.UTF_8)
+                            "level".getBytes(StandardCharsets.UTF_8)
                     );
 
                 }
@@ -116,13 +113,13 @@ public class RedisSortedSetLeaderboardRepository implements LeaderboardRepositor
                 //decode bytes to Strings
                 String username = values.get(0) ;
                 String levelStr = values.get(1) ;
-                String lastUpdatedStr = values.get(2) ;
+
 
                 int level = levelStr != null ? Integer.parseInt(levelStr) : 0;
-                Instant lastUpdated = lastUpdatedStr != null ? Instant.ofEpochSecond(Long.parseLong(lastUpdatedStr)) : Instant.now();
+
 
                 //create entry
-                result.add(new LeaderboardEntry(playerId, username, score, level, lastUpdated));
+                result.add(new LeaderboardEntry(playerId, username, score, level));
             }
             //return list of entries
             return result;
@@ -159,8 +156,7 @@ public class RedisSortedSetLeaderboardRepository implements LeaderboardRepositor
 //                connection.hashCommands().hMGet(
 //                        key,
 //                        "username".getBytes(StandardCharsets.UTF_8),
-//                        "level".getBytes(StandardCharsets.UTF_8),
-//                        "lastUpdated".getBytes(StandardCharsets.UTF_8)
+//                        "level".getBytes(StandardCharsets.UTF_8)
 //                );
 //            }
 //            return null;
@@ -180,13 +176,11 @@ public class RedisSortedSetLeaderboardRepository implements LeaderboardRepositor
 //            List<String> values = (List<String>) hashResultIterator.next();
 //            String username = values.get(0);
 //            String levelStr = values.get(1);
-//            String lastUpdatedStr = values.get(2);
 //
 //            int level = levelStr != null ? Integer.parseInt(levelStr) : 0;
-//            Instant lastUpdated = lastUpdatedStr != null ? Instant.ofEpochSecond(Long.parseLong(lastUpdatedStr)) : Instant.now();
 //
 //            // Create leaderboard entry and add to the result list
-//            result.add(new LeaderboardEntry(playerId, username, score != null ? score : 0.0, level, lastUpdated));
+//            result.add(new LeaderboardEntry(playerId, username, score != null ? score : 0.0, level);
 //        }
 //
 //        // Return the combined list of leaderboard entries
@@ -222,12 +216,9 @@ public class RedisSortedSetLeaderboardRepository implements LeaderboardRepositor
             var hashOps = redisTemplate.opsForHash();
             var username = (String) hashOps.get(PLAYER_HASH_PREFIX + playerId, "username");
             var levelStr = (String) hashOps.get(PLAYER_HASH_PREFIX + playerId, "level");
-            var lastUpdatedStr = (String) hashOps.get(PLAYER_HASH_PREFIX + playerId, "lastUpdated");
-
             int level = levelStr != null ? Integer.parseInt(levelStr) : 0;
-            Instant lastUpdated = lastUpdatedStr != null ? Instant.ofEpochSecond(Long.parseLong(lastUpdatedStr)) : Instant.now();
 
-            return new LeaderboardEntry(playerId, username, score, level, lastUpdated);
+            return new LeaderboardEntry(playerId, username, score, level);
         }
 //    @Override
 //    public void addPlayerEntry(String playerId, String username, int level, double initialScore) {
@@ -237,7 +228,6 @@ public class RedisSortedSetLeaderboardRepository implements LeaderboardRepositor
         ////        var hashOps = redisTemplate.opsForHash();
 //        redisTemplate.opsForHash().put(playerId, "username", username);
 //        redisTemplate.opsForHash().put( playerId, "level", String.valueOf(level));
-//        redisTemplate.opsForHash().put( playerId, "lastUpdated", String.valueOf(Instant.now().getEpochSecond()));
 //    }
         @Override
         public void addPlayerEntry(String playerId, String username, int level, double initialScore) {
@@ -248,7 +238,6 @@ public class RedisSortedSetLeaderboardRepository implements LeaderboardRepositor
             Map<String, String> playerData = new HashMap<>();
             playerData.put("username", username);
             playerData.put("level", String.valueOf(level));
-            playerData.put("lastUpdated", String.valueOf(Instant.now().getEpochSecond()));
 
             // Add all fields to the hash in one go
             redisTemplate.opsForHash().putAll(playerId, playerData);
@@ -283,7 +272,6 @@ public class RedisSortedSetLeaderboardRepository implements LeaderboardRepositor
 //                Map<String, String> fields = new HashMap<>();
 //                fields.put("username", e.getUsername());
 //                fields.put("level", String.valueOf(e.getLevel()));
-//                fields.put("lastUpdated", String.valueOf(Instant.now().getEpochSecond()));
 //
 //                redisTemplate.opsForHash().putAll(playerKey, fields);
 //            }
@@ -305,8 +293,6 @@ public class RedisSortedSetLeaderboardRepository implements LeaderboardRepositor
                     Map<byte[], byte[]> fields = new HashMap<>();
                     fields.put("username".getBytes(StandardCharsets.UTF_8), e.getUsername().getBytes(StandardCharsets.UTF_8));
                     fields.put("level".getBytes(StandardCharsets.UTF_8), String.valueOf(e.getLevel()).getBytes(StandardCharsets.UTF_8));
-                    fields.put("lastUpdated".getBytes(StandardCharsets.UTF_8), String.valueOf(Instant.now().getEpochSecond()).getBytes(StandardCharsets.UTF_8));
-
                     connection.hMSet(e.getPlayerId().getBytes(StandardCharsets.UTF_8), fields);
                 }
                 return null;
