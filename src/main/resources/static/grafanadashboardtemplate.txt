@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 11,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -101,7 +101,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "histogram_quantile(0.5, sum(rate(leaderboard_increment_score_seconds_bucket[5m])) by (le,type))",
+          "expr": "histogram_quantile(0.5, sum(irate(leaderboard_increment_score_seconds_bucket[2s])) by (le,type))",
           "legendFormat": "p50 ({{type}})",
           "range": true,
           "refId": "A"
@@ -148,7 +148,7 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "smooth",
+            "lineInterpolation": "linear",
             "lineStyle": {
               "fill": "solid"
             },
@@ -190,6 +190,7 @@
         "y": 0
       },
       "id": 2,
+      "interval": "1s",
       "options": {
         "legend": {
           "calcs": [],
@@ -207,7 +208,10 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(rate(leaderboard_increment_score_seconds_count[5m])) by (type)",
+          "exemplar": false,
+          "expr": "sum(irate(leaderboard_increment_score_seconds_count[2s])) by (type)",
+          "instant": false,
+          "interval": "1s",
           "legendFormat": "{{type}}",
           "range": true,
           "refId": "A"
@@ -1608,12 +1612,12 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Leaderboard Repository: Redis / Caffeine / Java",
   "uid": "380dde36-8904-4964-a479-680c3773b6c1",
-  "version": 31
+  "version": 8
 }

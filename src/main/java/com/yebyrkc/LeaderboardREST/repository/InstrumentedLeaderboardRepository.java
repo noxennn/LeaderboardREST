@@ -22,18 +22,30 @@ public class InstrumentedLeaderboardRepository implements LeaderboardRepository 
 
     private Timer timer(String name) {
         return Timer.builder(name)
-                .tag("type", typeTag)
-                .publishPercentileHistogram()      // turn on histogram support
+                .tag("type", typeTag)// turn on histogram support
                 .publishPercentiles(0.5, 0.95, 0.99) // still export these percentiles
                 // SLA boundaries, expressed in seconds:
                 //   10 ms → 0.01, 50 ms → 0.05, 100 ms → 0.1, 500 ms → 0.5, 1 s → 1.0
-                .serviceLevelObjectives(Duration.ofMillis(10),
-                        Duration.ofMillis(50),
-                        Duration.ofMillis(100),
-                        Duration.ofMillis(500),
-                        Duration.ofSeconds(1))
+                .serviceLevelObjectives(
+                        Duration.ofNanos(500),
+                        Duration.ofNanos(1_000),
+                        Duration.ofNanos(10_000),
+                        Duration.ofNanos(25_000),
+                        Duration.ofNanos(50_000),
+                        Duration.ofNanos(100_000),
+                        Duration.ofNanos(200_000),  // 0.0002 s
+                        Duration.ofNanos(500_000),  // 0.0005 s
+                        Duration.ofNanos(600_000),  // 0.0006 s
+                        Duration.ofNanos(700_000),  // 0.0007 s
+                        Duration.ofNanos(800_000),  // 0.0008 s
+                        Duration.ofMillis(1),       // 0.001 s
+                        Duration.ofMillis(2),       // 0.002 s
+                        Duration.ofMillis(5),       // 0.005 s
+                        Duration.ofMillis(10),      // 0.010 s
+                        Duration.ofMillis(20)       // 0.020 s
+                )
                 // optional: if you want to set expected ranges
-                .minimumExpectedValue(Duration.ofMillis(1))
+                .minimumExpectedValue(Duration.ofNanos(1))
                 .maximumExpectedValue(Duration.ofSeconds(10))
                 .register(meterRegistry);
     }
