@@ -64,7 +64,8 @@ public class LeaderboardController {
     @PostMapping("/{playerId}/score/incrementBy")
     public double incrementScore(@PathVariable String playerId,@RequestBody IncrementRequestDTO dto) {
         logger.debug("Incrementing score for playerId={} by {}", playerId, dto.getIncrementBy());
-        return leaderboardService.incrementScore(playerId, dto.getIncrementBy());
+
+        return leaderboardService.incrementScore("player:"+playerId, dto.getIncrementBy());
     }
 
     /** Add new player to LeaderboardEntry

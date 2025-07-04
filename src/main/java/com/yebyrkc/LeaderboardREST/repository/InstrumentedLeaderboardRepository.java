@@ -3,7 +3,9 @@ package com.yebyrkc.LeaderboardREST.repository;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 
+import java.time.Duration;
 import java.util.List;
 
 public class InstrumentedLeaderboardRepository implements LeaderboardRepository {
@@ -21,8 +23,18 @@ public class InstrumentedLeaderboardRepository implements LeaderboardRepository 
     private Timer timer(String name) {
         return Timer.builder(name)
                 .tag("type", typeTag)
-                .publishPercentileHistogram()
-                .publishPercentiles(0.5, 0.95, 0.99)
+                .publishPercentileHistogram()      // turn on histogram support
+                .publishPercentiles(0.5, 0.95, 0.99) // still export these percentiles
+                // SLA boundaries, expressed in seconds:
+                //   10 ms → 0.01, 50 ms → 0.05, 100 ms → 0.1, 500 ms → 0.5, 1 s → 1.0
+                .serviceLevelObjectives(Duration.ofMillis(10),
+                        Duration.ofMillis(50),
+                        Duration.ofMillis(100),
+                        Duration.ofMillis(500),
+                        Duration.ofSeconds(1))
+                // optional: if you want to set expected ranges
+                .minimumExpectedValue(Duration.ofMillis(1))
+                .maximumExpectedValue(Duration.ofSeconds(10))
                 .register(meterRegistry);
     }
 
