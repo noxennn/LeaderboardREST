@@ -40,7 +40,9 @@ public class InstrumentedLeaderboardRepository implements LeaderboardRepository 
                         Duration.ofMillis(20),       // 0.020 s
                         Duration.ofMillis(50),       // 0.020 s
                         Duration.ofMillis(100),       // 0.020 s
-                        Duration.ofMillis(200)       // 0.020 s
+                        Duration.ofMillis(200),      // 0.020 s
+                        Duration.ofMillis(500),       // 0.020 s
+                        Duration.ofMillis(1000)       // 0.020 s
                 )
                 // optional: if you want to set expected ranges
                 .register(meterRegistry);
