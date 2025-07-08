@@ -13,8 +13,8 @@ export let options = {
       exec: 'readScenario',
       startVUs: 0,
       stages: [
-        { duration: '10s', target: 6500 },
-        { duration: '50s', target: 6500 },
+        { duration: '10s', target: 6250 },
+        { duration: '50s', target: 6250 },
       ],
        gracefulStop: '5s',
    },
@@ -24,8 +24,7 @@ export let options = {
          startVUs: 0,
          stages: [
            { duration: '5s', target: 500 },
-           { duration: '20s', target: 500 },
-           { duration: '20s', target: 500 },
+           { duration: '45s', target: 500 },
            { duration: '10s', target: 0},
          ],
          gracefulStop: '5s',

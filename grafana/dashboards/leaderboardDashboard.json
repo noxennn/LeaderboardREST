@@ -217,7 +217,7 @@
         {
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(irate(leaderboard_increment_score_seconds_count[2s])) by (type)",
+          "expr": "sum(rate(leaderboard_increment_score_seconds_count[10s])) by (type)",
           "instant": false,
           "interval": "1s",
           "legendFormat": "{{type}}",
@@ -417,7 +417,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(irate(leaderboard_get_top_players_seconds_count[2s])) by (type)",
+          "expr": "sum(rate(leaderboard_get_top_players_seconds_count[10s])) by (type)",
           "legendFormat": "{{type}}",
           "range": true,
           "refId": "A"
