@@ -80,7 +80,7 @@ export function readScenario() {
     'read success': (r) => r.status === 200,
   });
 
-  sleep(1);
+  sleep(0.5);
 }
 
 export function writeScenario() {
