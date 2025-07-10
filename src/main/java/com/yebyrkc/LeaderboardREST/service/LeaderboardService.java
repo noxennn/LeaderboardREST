@@ -1,7 +1,7 @@
 package com.yebyrkc.LeaderboardREST.service;
 
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
-import com.yebyrkc.LeaderboardREST.repository.LeaderboardRepository;
+import com.yebyrkc.LeaderboardREST.repository.ILeaderboardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +11,9 @@ import java.util.List;
 public class LeaderboardService {
 
     @Autowired
-    private final LeaderboardRepository repository;
+    private final ILeaderboardRepository repository;
 
-    public LeaderboardService(LeaderboardRepository repository) {
+    public LeaderboardService(ILeaderboardRepository repository) {
         this.repository = repository;
     }
 

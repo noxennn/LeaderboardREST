@@ -1,11 +1,10 @@
 package com.yebyrkc.LeaderboardREST.repository;
 
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface LeaderboardRepository {
+public interface ILeaderboardRepository {
 
     double incrementScore(String playerId, double increment);
 

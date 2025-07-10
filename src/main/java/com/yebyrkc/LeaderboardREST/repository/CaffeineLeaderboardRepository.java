@@ -1,17 +1,12 @@
 package com.yebyrkc.LeaderboardREST.repository;
 
-import com.yebyrkc.LeaderboardREST.exception.PlayerNotFoundException;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -19,7 +14,7 @@ import java.util.stream.Collectors;
 
 
 @Profile("caffeine")
-public class CaffeineLeaderboardRepository implements LeaderboardRepository {
+public class CaffeineLeaderboardRepository implements ILeaderboardRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(CaffeineLeaderboardRepository.class);
 

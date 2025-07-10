@@ -10,22 +10,22 @@ public class LeaderboardRepositoryConfig {
 
     @Bean
     @Profile("caffeine")
-    public LeaderboardRepository caffeineRepository(MeterRegistry meterRegistry) {
-        LeaderboardRepository impl = new CaffeineLeaderboardRepository();
+    public ILeaderboardRepository caffeineRepository(MeterRegistry meterRegistry) {
+        ILeaderboardRepository impl = new CaffeineLeaderboardRepository();
         return new InstrumentedLeaderboardRepository(impl, meterRegistry, "caffeine");
     }
 
     @Bean
     @Profile("java")
-    public LeaderboardRepository javaRepository(MeterRegistry meterRegistry) {
-        LeaderboardRepository impl = new InMemoryLeaderboardRepository();
+    public ILeaderboardRepository javaRepository(MeterRegistry meterRegistry) {
+        ILeaderboardRepository impl = new InMemoryLeaderboardRepository();
         return new InstrumentedLeaderboardRepository(impl, meterRegistry, "java");
     }
 
     @Bean
     @Profile("redis")
-    public LeaderboardRepository redisRepository(MeterRegistry meterRegistry, RedisTemplate<String, String> redisTemplate) {
-        LeaderboardRepository impl = new RedisSortedSetLeaderboardRepository(redisTemplate);
+    public ILeaderboardRepository redisRepository(MeterRegistry meterRegistry, RedisTemplate<String, String> redisTemplate) {
+        ILeaderboardRepository impl = new RedisSortedSetLeaderboardRepository(redisTemplate);
         return new InstrumentedLeaderboardRepository(impl, meterRegistry, "redis");
     }
 

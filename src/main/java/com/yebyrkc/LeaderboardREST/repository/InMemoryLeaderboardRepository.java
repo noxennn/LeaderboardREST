@@ -4,11 +4,8 @@ import com.yebyrkc.LeaderboardREST.exception.PlayerNotFoundException;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -16,7 +13,7 @@ import java.util.stream.Collectors;
 
 
 @Profile("java")
-public class InMemoryLeaderboardRepository implements LeaderboardRepository {
+public class InMemoryLeaderboardRepository implements ILeaderboardRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(InMemoryLeaderboardRepository.class);
 

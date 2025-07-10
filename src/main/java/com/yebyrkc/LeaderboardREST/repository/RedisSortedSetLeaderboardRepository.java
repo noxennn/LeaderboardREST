@@ -10,13 +10,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.*;
 
 
 
 @Profile("redis")
-public class RedisSortedSetLeaderboardRepository implements LeaderboardRepository{
+public class RedisSortedSetLeaderboardRepository implements ILeaderboardRepository {
 
         private final RedisTemplate<String, String> redisTemplate;
 

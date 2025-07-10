@@ -4,7 +4,7 @@ import com.yebyrkc.LeaderboardREST.dto.IncrementRequestDTO;
 import com.yebyrkc.LeaderboardREST.dto.LeaderboardEntryDTO;
 import com.yebyrkc.LeaderboardREST.dto.PlayerGenerationRequestDTO;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
-import com.yebyrkc.LeaderboardREST.repository.LeaderboardRepository;
+import com.yebyrkc.LeaderboardREST.repository.ILeaderboardRepository;
 import com.yebyrkc.LeaderboardREST.service.LeaderboardService;
 import com.yebyrkc.LeaderboardREST.service.PlayerGenerator;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class LeaderboardController {
 
 
     @Autowired
-    private LeaderboardRepository leaderboardRepository;
+    private ILeaderboardRepository leaderboardRepository;
 
     @Autowired
     private LeaderboardService leaderboardService;

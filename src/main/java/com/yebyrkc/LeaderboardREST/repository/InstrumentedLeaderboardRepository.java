@@ -3,18 +3,17 @@ package com.yebyrkc.LeaderboardREST.repository;
 import com.yebyrkc.LeaderboardREST.model.LeaderboardEntry;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 
 import java.time.Duration;
 import java.util.List;
 
-public class InstrumentedLeaderboardRepository implements LeaderboardRepository {
+public class InstrumentedLeaderboardRepository implements ILeaderboardRepository {
 
-    private final LeaderboardRepository repository;
+    private final ILeaderboardRepository repository;
     private final MeterRegistry meterRegistry;
     private final String typeTag;
 
-    public InstrumentedLeaderboardRepository(LeaderboardRepository repository, MeterRegistry meterRegistry, String typeTag) {
+    public InstrumentedLeaderboardRepository(ILeaderboardRepository repository, MeterRegistry meterRegistry, String typeTag) {
         this.repository = repository;
         this.meterRegistry = meterRegistry;
         this.typeTag = typeTag;
