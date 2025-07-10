@@ -13,8 +13,8 @@ export let options = {
       exec: 'readScenario',
       startVUs: 0,
       stages: [
-        { duration: '10s', target: 6250 },
-        { duration: '50s', target: 6250 },
+        { duration: '10s', target: 7500 },
+        { duration: '50s', target: 7500 },
       ],
        gracefulStop: '5s',
    },
@@ -80,7 +80,7 @@ export function readScenario() {
     'read success': (r) => r.status === 200,
   });
 
-  sleep(0.5);
+  sleep(1);
 }
 
 export function writeScenario() {
