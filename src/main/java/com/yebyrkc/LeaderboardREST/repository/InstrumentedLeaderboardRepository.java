@@ -22,31 +22,28 @@ public class InstrumentedLeaderboardRepository implements ILeaderboardRepository
     private Timer timer(String name) {
         return Timer.builder(name)
                 .tag("type", typeTag)
-                .publishPercentiles(0.5, 0.95, 0.99) // still export these percentiles
-
+                .publishPercentiles(0.5, 0.95, 0.99)
                 .serviceLevelObjectives(
                         Duration.ofNanos(1_000),
                         Duration.ofNanos(10_000),
                         Duration.ofNanos(25_000),
                         Duration.ofNanos(50_000),
                         Duration.ofNanos(100_000),
-                        Duration.ofNanos(200_000),  // 0.0002 s
-                        Duration.ofNanos(500_000),  // 0.0005 s
-                        Duration.ofMillis(1),       // 0.001 s
-                        Duration.ofMillis(2),       // 0.002 s
-                        Duration.ofMillis(5),       // 0.005 s
-                        Duration.ofMillis(10),      // 0.010 s
-                        Duration.ofMillis(20),       // 0.020 s
-                        Duration.ofMillis(50),       // 0.020 s
-                        Duration.ofMillis(100),       // 0.020 s
-                        Duration.ofMillis(200),      // 0.020 s
-                        Duration.ofMillis(500),       // 0.020 s
-                        Duration.ofMillis(1000)       // 0.020 s
+                        Duration.ofNanos(200_000),
+                        Duration.ofNanos(500_000),
+                        Duration.ofMillis(1),
+                        Duration.ofMillis(2),
+                        Duration.ofMillis(5),
+                        Duration.ofMillis(10),
+                        Duration.ofMillis(20),
+                        Duration.ofMillis(50),
+                        Duration.ofMillis(100),
+                        Duration.ofMillis(200),
+                        Duration.ofMillis(500),
+                        Duration.ofMillis(1000)
                 )
-                // optional: if you want to set expected ranges
                 .register(meterRegistry);
     }
-
     @Override
     public double incrementScore(String playerId, double increment) {
         return timer("leaderboard.increment.score")
